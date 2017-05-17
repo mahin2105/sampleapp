@@ -1,10 +1,14 @@
 require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
+
   def setup
     @admin     = users(:michael)
     @non_admin = users(:archer)
+    @user = users(:michael)
+    @other_user = users(:archer)
   end
+
 
   test "index as admin including pagination and delete links" do
     log_in_as(@admin)
@@ -27,6 +31,16 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_in_as(@non_admin)
     get users_path
     assert_select 'a', text: 'delete', count: 0
+  end
+
+  test "should redirect following when not logged in" do
+    get following_user_path(@user)
+    assert_redirected_to login_url
+  end
+
+  test "should redirect followers when not logged in" do
+    get followers_user_path(@user)
+    assert_redirected_to login_url
   end
 
 end
